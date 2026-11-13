@@ -30,12 +30,12 @@ defined( 'ABSPATH' ) || exit;
  */
 function thbe_hidden_titles() {
 	return array(
-		'Theme Options',
-		'Rank Math SEO',
+		'Fragmentos de código',
+		'Escritorio del foro',
 		'Smart Slider',
+		// 'Theme Options',
+		// 'Rank Math SEO',
 		// 'Fluent Forms Pro',
-		// 'Fragmentos de código',
-		// 'Escritorio del foro',
 		// 'Vaciar caché',
 	);
 }
@@ -48,12 +48,12 @@ function thbe_hidden_titles() {
  */
 function thbe_hidden_ids() {
 	return array(
-		'mts-theme-options', // Theme Options
-		'smart_slider_3',    // Smart Slider
-		'rank-math',         // Rank Math SEO
+		'code-snippets',  // Fragmentos de código
+		'wpf-community',  // Escritorio del foro
+		'smart_slider_3', // Smart Slider
+		// 'mts-theme-options',         // Theme Options
+		// 'rank-math',                 // Rank Math SEO
 		// 'fluent_form',               // Fluent Forms Pro
-		// 'code-snippets',             // Fragmentos de código
-		// 'wpf-community',             // Escritorio del foro
 		// 'cache_enabler_clear_cache', // Vaciar caché
 		// 'new_content_smart_slider',  // Añadir > Slider [Smart Slider 3]
 	);
