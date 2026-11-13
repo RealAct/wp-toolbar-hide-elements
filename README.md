@@ -51,6 +51,15 @@ define( 'THBE_HIDE_HELP_TAB', false );        // "Ayuda" tab
 - **By ID** (`thbe_hidden_ids`): more robust if a plugin's label changes with language or contains only an icon (like the comments bubble or the ✨ icon). To find an ID, right-click the item → *Inspect*; the surrounding `<li id="wp-admin-bar-XXXX">` means the ID is `XXXX`. Common core IDs: `wp-logo`, `site-name`, `comments`, `new-content`, `updates`, `search`, `my-account`.
 - Hiding a parent item also hides all its sub-items.
 
+## Troubleshooting
+
+- **Still seeing items?** As an administrator, add `?thbe_debug=1` to any admin URL (e.g. `/wp-admin/?thbe_debug=1`). A blue notice confirms the snippet is running and lists what it removed. No notice means the snippet isn't loading: check it's active, set to *Run snippet everywhere*, and pasted without the opening `<?php` line.
+- **List every item's real name and ID:** paste this into the browser console on an admin page:
+  ```js
+  console.table([...document.querySelectorAll('#wpadminbar li[id^="wp-admin-bar-"]')].map(li => ({ id: li.id.replace('wp-admin-bar-',''), text: (li.querySelector(':scope > .ab-item')||{}).textContent?.trim() })));
+  ```
+- IDs listed in `thbe_hidden_ids()` are also hidden with CSS, as a safety net if a plugin re-adds its item.
+
 ## Notes
 
 - This hides items from the Toolbar only. The pages they link to are still reachable from the left admin menu or by URL; it isn't a permissions control.
