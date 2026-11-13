@@ -48,8 +48,14 @@ function thbe_hidden_titles() {
  */
 function thbe_hidden_ids() {
 	return array(
-		// 'wp-logo',
-		// 'comments',
+		'mts-theme-options', // Theme Options
+		'smart_slider_3',    // Smart Slider
+		'rank-math',         // Rank Math SEO
+		// 'fluent_form',               // Fluent Forms Pro
+		// 'code-snippets',             // Fragmentos de código
+		// 'wpf-community',             // Escritorio del foro
+		// 'cache_enabler_clear_cache', // Vaciar caché
+		// 'new_content_smart_slider',  // Añadir > Slider [Smart Slider 3]
 	);
 }
 
@@ -129,6 +135,7 @@ function thbe_remove_nodes( $wp_admin_bar = null ) {
 			$to_remove[ $id ] = true;
 		}
 	}
+	$GLOBALS['thbe_debug'][] = array( current_filter(), count( $nodes ), array_keys( $to_remove ) );
 
 	// Include descendants so no orphaned sub-items remain.
 	do {
@@ -220,3 +227,51 @@ if ( THBE_HIDE_HELP_TAB ) {
 		PHP_INT_MAX
 	);
 }
+
+/**
+ * CSS safety net: hides configured IDs (and their sub-items) even if a plugin
+ * re-adds them after the removal passes above. Printed in <head>, so no flicker.
+ */
+function thbe_print_css() {
+	if ( ! thbe_should_run() ) {
+		return;
+	}
+	$selectors = array();
+	foreach ( thbe_hidden_ids() as $id ) {
+		$id = preg_replace( '/[^A-Za-z0-9_\-]/', '', (string) $id );
+		if ( '' !== $id ) {
+			$selectors[] = '#wpadminbar #wp-admin-bar-' . $id;
+		}
+	}
+	if ( $selectors ) {
+		echo '<style id="thbe-css">' . implode( ',', $selectors ) . '{display:none!important}</style>' . "\n";
+	}
+}
+add_action( 'admin_head', 'thbe_print_css', PHP_INT_MAX );
+add_action( 'wp_head', 'thbe_print_css', PHP_INT_MAX );
+
+/**
+ * Troubleshooting: add ?thbe_debug=1 to any admin URL (as an administrator)
+ * to see whether the snippet ran and what it removed.
+ */
+add_action(
+	'admin_notices',
+	function () {
+		if ( empty( $_GET['thbe_debug'] ) || ! current_user_can( 'manage_options' ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+			return;
+		}
+		echo '<div class="notice notice-info"><p><strong>Toolbar Hide Elements is running.</strong></p><ul>';
+		foreach ( (array) ( $GLOBALS['thbe_debug'] ?? array() ) as $row ) {
+			printf(
+				'<li><code>%s</code>: %d items checked, removed: <code>%s</code></li>',
+				esc_html( $row[0] ),
+				(int) $row[1],
+				esc_html( $row[2] ? implode( ', ', $row[2] ) : '(none)' )
+			);
+		}
+		if ( empty( $GLOBALS['thbe_debug'] ) ) {
+			echo '<li>The removal step never ran (another plugin may be replacing the toolbar).</li>';
+		}
+		echo '</ul></div>';
+	}
+);
